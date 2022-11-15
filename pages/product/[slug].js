@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-const ProductPage = ({ addToCart }) => {
+import mongoose from "mongoose";
+import Product from "../../models/Product";
+const ProductPage = ({ addToCart, product, variants, error }) => {
   const router = useRouter();
   const { slug } = router.query;
   const [pin, setPin] = useState();
   const [service, setService] = useState();
+  const [color, setColor] = useState();
+  const [size, setSize] = useState();
   const onChangePin = (e) => {
     setPin(e.target.value);
   };
+
   const checkServiceAbility = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
     let pinJson = await pins.json();
@@ -19,6 +24,13 @@ const ProductPage = ({ addToCart }) => {
     }
   };
 
+  useEffect(() => {
+    if (!error) {
+      setColor(product.color);
+      setSize(product.size);
+    }
+  }, [router.query]);
+
   return (
     <div>
       <section className='text-gray-600 body-font overflow-hidden'>
@@ -27,14 +39,14 @@ const ProductPage = ({ addToCart }) => {
             <img
               alt='ecommerce'
               className='lg:w-1/2 w-full vsm:px-24px sm:px-44 lg:px-10 sm:h-[75%] object-top rounded'
-              src='/img/product_temp.jpg'
+              src={product.img}
             />
             <div className='lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0'>
               <h2 className='text-sm title-font text-gray-500 tracking-widest'>
-                BRAND NAME
+                CODESWEAR
               </h2>
               <h1 className='text-gray-900 text-3xl title-font font-medium mb-1'>
-                The Catcher in the Rye
+                {product.title} ({size} / {color})
               </h1>
               <div className='flex mb-4'>
                 <span className='flex items-center'>
@@ -134,29 +146,91 @@ const ProductPage = ({ addToCart }) => {
                   </a>
                 </span>
               </div>
-              <p className='leading-relaxed'>
-                Fam locavore kickstarter distillery. Mixtape chillwave tumeric
-                sriracha taximy chia microdosing tilde DIY. XOXO fam indxgo
-                juiceramps cornhole raw denim forage brooklyn. Everyday carry +1
-                seitan poutine tumeric. Gastropub blue bottle austin listicle
-                pour-over, neutra jean shorts keytar banjo tattooed umami
-                cardigan.
-              </p>
+              <p className='leading-relaxed'>{product.desc}</p>
               <div className='flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5'>
                 <div className='flex'>
                   <span className='mr-3'>Color</span>
-                  <button className='border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none'></button>
-                  <button className='border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none'></button>
-                  <button className='border-2 border-gray-300 ml-1 bg-pink-500 rounded-full w-6 h-6 focus:outline-none'></button>
+                  {/* {Object.keys(variants).includes("red") &&
+                    Object.keys(variants["red"]).includes(size) && (
+                      <button
+                        onClick={() => {
+                          refreshVariant(size, "red");
+                        }}
+                        className={`border-2 bg-red rounded-full w-6 h-6 focus:outline-none ${
+                          color == "red" ? "border-black" : "border-gray-300"
+                        }`}
+                      ></button>
+                    )}
+                  {Object.keys(variants).includes("stone") &&
+                    Object.keys(variants["stone"]).includes(size) && (
+                      <button
+                        onClick={() => {
+                          refreshVariant(size, "stone");
+                        }}
+                        className={`border-2 bg-stone-500 rounded-full w-6 h-6 focus:outline-none ${
+                          color == "stone" ? "border-black" : "border-gray-300"
+                        }`}
+                      ></button>
+                    )} */}
+                  {Object.keys(variants).map(
+                    (col, i) =>
+                      Object.keys(variants[col]).includes(size) && (
+                        <button
+                          onClick={() => (setSize(size), setColor(col))}
+                          key={i}
+                          className={`border-2 ${
+                            color === col ? "border-black" : "border-gray-300"
+                          } ml-1 bg-${col}-500 rounded-full w-6 h-6 focus:outline-none`}
+                        ></button>
+                      )
+
+                    // Object.keys(variants).includes(col) &&
+                    // Object.keys(variants[col]).includes(size) && (
+                    //   <button
+                    //     onClick={() => (setSize(size), setColor(col))}
+                    //     key={i}
+                    //     className={`border-2 ${
+                    //       color === col ? "border-black" : "border-gray-300"
+                    //     } ml-1 bg-${col}-500 rounded-full w-6 h-6 focus:outline-none`}
+                    //   ></button>
+                    // )
+                  )}
                 </div>
                 <div className='flex ml-6 items-center'>
                   <span className='mr-3'>Size</span>
                   <div className='relative'>
-                    <select className='rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10'>
-                      <option>SM</option>
-                      <option>M</option>
-                      <option>L</option>
-                      <option>XL</option>
+                    <select
+                      value={size}
+                      onChange={(e) => setSize(e.target.value)}
+                      className='rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10'
+                    >
+                      {color && Object.keys(variants[color]).includes("S") && (
+                        <option>S</option>
+                      )}
+                      {color && Object.keys(variants[color]).includes("M") && (
+                        <option>M</option>
+                      )}
+                      {color && Object.keys(variants[color]).includes("L") && (
+                        <option>L</option>
+                      )}
+                      {color && Object.keys(variants[color]).includes("XL") && (
+                        <option>XL</option>
+                      )}
+                      {color &&
+                        Object.keys(variants[color]).includes("XXL") && (
+                          <option>XXL</option>
+                        )}
+                      {/* {Object.values(variants).map((key) =>
+                        Object.keys(key).map((item) => {
+                          console.log("key", key);
+                          console.log("item", item);
+                          return (
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
+                          );
+                        })
+                      )} */}
                     </select>
                     <span className='absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center'>
                       <svg
@@ -176,10 +250,19 @@ const ProductPage = ({ addToCart }) => {
               </div>
               <div className='flex'>
                 <span className='title-font font-medium text-2xl text-gray-900'>
-                  $58.00
+                  ₹{product.price}
                 </span>
                 <button
-                  onClick={() => addToCart(slug, 1, 499, "tshirt", "M", "Red")}
+                  onClick={() =>
+                    addToCart(
+                      slug,
+                      1,
+                      product.price,
+                      product.title,
+                      size,
+                      color
+                    )
+                  }
                   className='flex ml-14 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded'
                 >
                   Add to Cart
@@ -230,5 +313,41 @@ const ProductPage = ({ addToCart }) => {
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  let error = null;
+  if (!mongoose.connections[0].readyState) {
+    await mongoose.connect(process.env.MONGO_URI);
+  }
+  let product = await Product.findOne({ slug: context.query.slug });
+  if (product == null) {
+    return {
+      props: {
+        error: 404,
+      },
+    };
+  }
+
+  let variants = await Product.find({
+    title: product.title,
+  });
+  let colorSizeSlug = {};
+  for (let item of variants) {
+    if (Object.keys(colorSizeSlug).includes(item.color)) {
+      colorSizeSlug[item.color][item.size] = { slug: item.slug };
+    } else {
+      colorSizeSlug[item.color] = {};
+      colorSizeSlug[item.color][item.size] = { slug: item.slug };
+    }
+  }
+
+  return {
+    props: {
+      error: error,
+      product: JSON.parse(JSON.stringify(product)),
+      variants: JSON.parse(JSON.stringify(colorSizeSlug)),
+    },
+  };
+}
 
 export default ProductPage;
