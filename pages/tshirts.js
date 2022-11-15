@@ -6,17 +6,6 @@ import mongoose from "mongoose";
 import connectDb from "../middleware/mongoose";
 import Product from "../models/Product";
 const Tshirts = ({ products }) => {
-  console.log("productss", products);
-  // const [products, setProducts] = useState();
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-  // const getData = async () => {
-  //   let product = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/products`);
-  //   product = await product.json();
-  //   setProducts(product);
-  // };
-
   return (
     <div>
       <Head>
@@ -34,14 +23,11 @@ const Tshirts = ({ products }) => {
                   key={item.title}
                 >
                   <div className='p-4 sm:p-6 md:p-10 mx-4 items-center my-5 cursor-pointer shadow-lg'>
-                    <Image
+                    <img
                       alt='ecommerce'
-                      className='w-3/4 mx-auto'
-                      src='/img/tshirt_temp.jpg'
-                      width={190}
-                      height={260}
+                      className='m-auto md:mx-0 h-[30vh] md:h-[36vh] block'
+                      src={item.img}
                     />
-
                     <div className='mt-4 text-center'>
                       <h3 className='text-gray-500 text-xs tracking-widest title-font mb-1'>
                         {item.title}
@@ -67,7 +53,7 @@ export async function getServerSideProps(context) {
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URI);
   }
-  let products = await Product.find();
+  let products = await Product.find({ category: "tshirt" });
   console.log("Products", products);
   return {
     props: { products: JSON.parse(JSON.stringify(products)) },
