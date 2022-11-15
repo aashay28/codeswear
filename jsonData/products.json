@@ -1,0 +1,37 @@
+{
+  "products": [
+    {
+      "title": "Tshirt 1",
+      "slug": "tshirt1",
+      "desc": "This is a high quality tshirt",
+      "img": "https://www.mydesignation.com/wp-content/uploads/2019/08/malayali-tshirt-mydesignation-mockup-image-latest-golden-.jpg",
+      "category": "clothing",
+      "size": "M",
+      "color": "red",
+      "price": "250",
+      "availableQty": "5"
+    },
+    {
+      "title": "Tshirt 2",
+      "slug": "tshirt2",
+      "desc": "This is a high quality tshirt",
+      "img": "https://www.mydesignation.com/wp-content/uploads/2019/08/malayali-tshirt-mydesignation-mockup-image-latest-golden-.jpg",
+      "category": "clothing",
+      "size": "L",
+      "color": "red",
+      "price": "350",
+      "availableQty": "15"
+    },
+    {
+      "title": "Tshirt 3",
+      "slug": "tshirt3",
+      "desc": "This is a high quality tshirt",
+      "img": "https://www.mydesignation.com/wp-content/uploads/2019/08/malayali-tshirt-mydesignation-mockup-image-latest-golden-.jpg",
+      "category": "clothing",
+      "size": "XL",
+      "color": "red",
+      "price": "450",
+      "availableQty": "25"
+    }
+  ]
+}
