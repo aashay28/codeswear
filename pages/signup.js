@@ -21,20 +21,22 @@ const signup = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const data = { name, email, password };
+    const data = { name, email, password };
 
-    // let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
-    //   method: "POST", // or 'PUT'
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-    // let response = await res.json();
-    // console.log(response);
-    setEmail("");
-    setPassword("");
-    setName("");
+    let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let response = await res.json();
+    if (response.success === "Success") {
+      setEmail("");
+      setPassword("");
+      setName("");
+      router.push("/login");
+    }
     // toast.success("Your account is created!", {
     //   position: "bottom-left",
     //   autoClose: 1000,
