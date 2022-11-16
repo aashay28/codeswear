@@ -52,7 +52,7 @@ const Tshirts = ({ products }) => {
                         {products[item].color.map((col, i) => (
                           <button
                             key={i}
-                            className={`border-2 border-gray-300 ml-1 bg-${col}-500 rounded-full w-6 h-6 focus:outline-none`}
+                            className={`border-2 border-gray-300 ml-1 ${`bg-${col}-500`} rounded-full w-6 h-6 focus:outline-none`}
                           ></button>
                         ))}
                       </div>
