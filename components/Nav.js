@@ -11,15 +11,61 @@ import {
 import { BsFillBagCheckFill } from "react-icons/bs";
 import { MdAccountCircle } from "react-icons/md";
 
-const Nav = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
+const Nav = ({
+  user,
+  cart,
+  addToCart,
+  removeFromCart,
+  clearCart,
+  subTotal,
+  logout,
+}) => {
   const [sidebar, setSidebar] = useState(false);
-
+  const [dropdown, setDropdown] = useState(false);
   const toggleCart = () => {
     setSidebar(!sidebar);
   };
 
   return (
     <header>
+      {!sidebar && (
+        <span
+          onMouseOver={() => {
+            setDropdown(true);
+          }}
+          onMouseLeave={() => {
+            setDropdown(false);
+          }}
+          className='fixed top-6 z-30 right-10'
+        >
+          {dropdown && (
+            <div className='absolute right-6 bg-white top-6 rounded-md px-5 w-32 z-30'>
+              <ul>
+                <Link href={"/myaccount"}>
+                  <li className='py-1 hover:text-pink-700 font-bold text-sm'>
+                    My account
+                  </li>
+                </Link>
+                <Link href={"/orders"}>
+                  <li className='py-1 hover:text-pink-700 font-bold text-sm'>
+                    My Orders
+                  </li>
+                </Link>
+
+                <li
+                  onClick={logout}
+                  className='py-1 cursor-pointer hover:text-pink-700 font-bold text-sm'
+                >
+                  Logout
+                </li>
+              </ul>
+            </div>
+          )}
+          <span>
+            {user.value && <MdAccountCircle className='md:text-3xl text-3xl' />}
+          </span>
+        </span>
+      )}
       <div className='flex flex-col md:flex-row md:justify-start justify-center items-center py-2 mb-1 shadow-xl'>
         <div className='logo mx-5'>
           <Link href={"/"}>
@@ -50,16 +96,21 @@ const Nav = ({ cart, addToCart, removeFromCart, clearCart, subTotal }) => {
         </div>
       </div>
       <div className='cart absolute right-0 top-4 mx-4 vvsm:mx-5 cursor-pointer flex '>
-        <Link href={"/login"}>
-          <MdAccountCircle className='text-2xl md:text-3xl mx-2' />
-        </Link>
+        {!user.value && (
+          <Link
+            href={"/login"}
+            className='bg-pink-600 px-2 py-1 rounded-md text-white mx-2'
+          >
+            Login
+          </Link>
+        )}
         <AiOutlineShoppingCart
           className='text-2xl md:text-3xl'
           onClick={toggleCart}
         />
       </div>
       {sidebar && (
-        <div className='sideCart w-[100vw] vvsm:w-[85vw] vsm:[50vw] sm:w-[65vw] md:w-[50vw] lg:w-[35vw] xl:w-[25vw] h-full absolute top-0 right-0 bg-pink-100 py-10 px-5 vvsm:px-10 z-10 ease-in-out duration-1000 transform transition-transform'>
+        <div className='sideCart overflow-y-scroll w-[100vw] vvsm:w-[85vw] vsm:[50vw] sm:w-[65vw] md:w-[50vw] lg:w-[35vw] xl:w-[25vw] h-full absolute top-0 right-0 bg-pink-100 py-10 px-5 vvsm:px-10 z-10 ease-in-out duration-1000 transform transition-transform'>
           <h2 className='font-bold text-xl text-center'>Shopping Cart</h2>
           <span
             onClick={toggleCart}

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 // import "react-toastify/dist/ReactToastify.css";
 
 const login = () => {
-  // const [name, setName] = useState();
+  const [name, setName] = useState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -27,45 +27,45 @@ const login = () => {
     e.preventDefault();
     const data = { email, password };
 
-    // let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/login`, {
-    //   method: "POST", // or 'PUT'
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-    // let response = await res.json();
+    let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/login`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let response = await res.json();
     // console.log(response);
     setEmail("");
     setPassword("");
-    // if (response.success) {
-    //   localStorage.setItem(
-    //     "myuser",
-    //     JSON.stringify({ token: response.token, email: response.email })
-    //   );
-    //   toast.success("You are successfully logged in!", {
-    //     position: "top-center",
-    //     autoClose: 1000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    //   setTimeout(() => {
-    //     router.push(process.env.NEXT_PUBLIC_HOST);
-    //   }, 1500);
-    // } else {
-    //   toast.error(response.error, {
-    //     position: "top-center",
-    //     autoClose: 1000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    // }
+    if (response.success) {
+      localStorage.setItem(
+        "myuser",
+        JSON.stringify({ token: response.token, email: response.email })
+      );
+      //   toast.success("You are successfully logged in!", {
+      //     position: "top-center",
+      //     autoClose: 1000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+      setTimeout(() => {
+        router.push(process.env.NEXT_PUBLIC_HOST);
+      }, 1500);
+      // } else {
+      //   toast.error(response.error, {
+      //     position: "top-center",
+      //     autoClose: 1000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+    }
   };
   return (
     <div>
