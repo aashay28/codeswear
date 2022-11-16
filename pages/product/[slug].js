@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import mongoose from "mongoose";
 import Product from "../../models/Product";
-const ProductPage = ({ addToCart, product, variants, error }) => {
+const ProductPage = ({ addToCart, product, variants, error, buyNow }) => {
   const router = useRouter();
   const { slug } = router.query;
   const [pin, setPin] = useState();
@@ -253,6 +253,15 @@ const ProductPage = ({ addToCart, product, variants, error }) => {
                   ₹{product.price}
                 </span>
                 <button
+                  disabled={product.availableQty <= 0}
+                  onClick={() => {
+                    buyNow(slug, 1, product.price, product.title, size, color);
+                  }}
+                  className='flex ml-8 text-white disabled:bg-pink-300 bg-pink-500 border-0 py-2 px-1 md:px-6 focus:outline-none hover:bg-pink-600 rounded'
+                >
+                  Buy Now
+                </button>
+                <button
                   onClick={() =>
                     addToCart(
                       slug,
@@ -263,11 +272,11 @@ const ProductPage = ({ addToCart, product, variants, error }) => {
                       color
                     )
                   }
-                  className='flex ml-14 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded'
+                  className='flex ml-5 text-white bg-pink-500 border-0 py-2 px-6 focus:outline-none hover:bg-pink-600 rounded'
                 >
                   Add to Cart
                 </button>
-                <button className='rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4'>
+                <button className='rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-5'>
                   <svg
                     fill='currentColor'
                     strokeLinecap='round'
