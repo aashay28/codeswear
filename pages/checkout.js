@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import Script from "next/script";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { BsFillBagCheckFill } from "react-icons/bs";
@@ -15,9 +17,158 @@ const checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
   const [city, setCity] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [user, setUser] = useState({ value: null });
-  const handleChange = () => {};
+  useEffect(() => {
+    const myuser = JSON.parse(localStorage.getItem("myuser"));
+    if (myuser && myuser.token) {
+      setUser(myuser);
+      setEmail(myuser.email);
+      fetchData(myuser.token);
+    }
+  }, []);
+  useEffect(() => {
+    if (
+      name.length > 3 &&
+      email.length > 3 &&
+      phone.length > 3 &&
+      address.length > 3 &&
+      pincode.length > 3
+    ) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [name, email, phone, pincode, address]);
+  const fetchData = async (token) => {
+    let data = { token: token };
+    // let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getuser`, {
+    //   method: "POST", // or 'PUT'
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // });
+    // let res = await a.json();
+    // setName(res.name);
+    // setAddress(res.address);
+    // setPincode(res.pincode);
+    // setPhone(res.phone);
+    // getPinCode(res.pincode);
+  };
+  const getPinCode = async (pin) => {
+    let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+    let pinJson = await pins.json();
+    if (Object.keys(pinJson).includes(pin)) {
+      setState(pinJson[pin][1]);
+      setCity(pinJson[pin][0]);
+    } else {
+      setState("");
+      setCity("");
+    }
+  };
+
+  const handleChange = async (e) => {
+    if (e.target.name == "name") {
+      setName(e.target.value);
+    } else if (e.target.name == "email") {
+      setEmail(e.target.value);
+    } else if (e.target.name == "phone") {
+      setPhone(e.target.value);
+    } else if (e.target.name == "address") {
+      setAddress(e.target.value);
+    } else if (e.target.name == "pincode") {
+      setPincode(e.target.value);
+      if (e.target.value.length == 6) {
+        getPinCode(e.target.value);
+      } else {
+        setState("");
+        setCity("");
+      }
+    }
+  };
+  const initiatePayment = async () => {
+    let oid = Math.floor(Math.random() * Date.now());
+    //get atransaction token
+
+    const data = {
+      cart,
+      subTotal,
+      oid,
+      email: email,
+      name,
+      address,
+      pincode,
+      phone,
+    };
+
+    let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pretransaction`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let txnRes = await a.json();
+    // console.log(txnRes);
+    if (txnRes.success) {
+      let txnToken = txnRes.txnToken;
+
+      var config = {
+        root: "",
+        flow: "DEFAULT",
+        data: {
+          orderId: oid /* update order id */,
+          token: txnToken /* update token value */,
+          tokenType: "TXN_TOKEN",
+          amount: subTotal /* update amount */,
+        },
+        handler: {
+          notifyMerchant: function (eventName, data) {
+            console.log("notifyMerchant handler function called");
+            console.log("eventName => ", eventName);
+            console.log("data => ", data);
+          },
+        },
+      };
+
+      // initialze configuration using init method
+
+      window.Paytm.CheckoutJS.init(config)
+        .then(function onSuccess() {
+          // after successfully updating configuration, invoke JS Checkout
+          window.Paytm.CheckoutJS.invoke();
+        })
+        .catch(function onError(error) {
+          console.log("error => ", error);
+        });
+    } else {
+      console.log(txnRes.error);
+      if (txnRes.cartClear) {
+        clearCart();
+      }
+      toast.error(txnRes.error, {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
   return (
     <div className='container m-auto px-2 sm:m-auto min-h-screen'>
+      {/* <ToastContainer
+        position='top-left'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      /> */}
       <Head>
         <title>Checkout - Codeswear.com</title>
         <meta
@@ -169,7 +320,7 @@ const checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
           {Object.keys(cart).length == 0 && (
             <div className='my-4 font-semibold'>Your cart is empty!</div>
           )}
-          {Object?.keys(cart)?.map((k) => {
+          {Object.keys(cart).map((k) => {
             return (
               <li key={k}>
                 <div className='item flex my-5'>
@@ -210,17 +361,17 @@ const checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
             );
           })}
         </ol>
-        <span className='font-bold'>Subtotal : {subTotal}</span>
+        <span className='font-bold'>Subtotal : ₹{subTotal}</span>
       </div>
       <div className='mx-4'>
         <Link href={"/checkout"}>
           <button
             disabled={disabled}
-            // onClick={initiatePayment}
+            onClick={initiatePayment}
             className='disabled:bg-pink-300 flex mr-2 text-white bg-pink-500 border-0 py-2 px-2 focus:outline-none hover:bg-pink-600 rounded text-sm'
           >
             <BsFillBagCheckFill className='m-1' />
-            Pay ₹1000
+            Pay ₹{subTotal}
           </button>
         </Link>
       </div>

@@ -25,7 +25,7 @@ const Nav = ({
   const toggleCart = () => {
     setSidebar(!sidebar);
   };
-
+ 
   return (
     <header>
       {!sidebar && (

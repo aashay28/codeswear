@@ -10,6 +10,7 @@ function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState({ value: null });
   const [key, setKey] = useState();
   const router = useRouter();
+
   useEffect(() => {
     try {
       if (localStorage.getItem("cart")) {
@@ -17,14 +18,18 @@ function MyApp({ Component, pageProps }) {
         saveCart(JSON.parse(localStorage.getItem("cart")));
       }
     } catch (error) {
-      // console.log(error);
       localStorage.clear();
     }
     const myuser = JSON.parse(localStorage.getItem("myuser"));
     if (myuser) {
       setUser({ value: myuser.token, email: myuser.email });
     }
+
     setKey(Math.random());
+    // const token = localStorage.getItem("token");
+    // if (token) {
+    //   setKey(Math.random());
+    // }
   }, [router.key]);
   const addToCart = (itemCode, qty, price, name, size, variant) => {
     if (Object.keys(cart).length == 0) {
@@ -86,6 +91,7 @@ function MyApp({ Component, pageProps }) {
     //   progress: undefined,
     // });
   };
+
   return (
     <>
       <Head>

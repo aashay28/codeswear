@@ -6,7 +6,7 @@ import Head from "next/head";
 import mongoose from "mongoose";
 
 const hoodies = ({ products }) => {
-  console.log("products", products);
+  
   return (
     <div>
       <Head>
@@ -51,7 +51,7 @@ const hoodies = ({ products }) => {
 
                       <div className='mt-1'>
                         {products[item].color.map((col, i) => {
-                          console.log("col", col);
+                      
                           return (
                             <button
                               key={i}
